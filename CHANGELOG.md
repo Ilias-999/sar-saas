@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.2] - 2026-05-01
+
+**Tag:** v1.2.2
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 1
+- Fixes: 0
+
+### Commits
+
+- `62a9a49` feat: linter wf — Ilias-999
+
+### Changed files
+
+#### Commit `62a9a49` - feat: linter wf
+
+- .github/workflows/lint-backend.yml
+
+---
+
+
 ## [1.1.2] - 2026-05-01
 
 **Tag:** v1.1.2
