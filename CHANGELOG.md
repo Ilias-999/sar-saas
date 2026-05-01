@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.1.0] - 2026-05-01
+
+**Tag:** v3.1.0
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 1
+- Fixes: 0
+
+### Commits
+
+- `76470b2` feat: docker build — Ilias-999
+
+### Changed files
+
+#### Commit `76470b2` - feat: docker build
+
+- .github/workflows/ci.yml
+
+---
+
+
 ## [3.0.1] - 2026-05-01
 
 **Tag:** v3.0.1
