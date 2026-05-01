@@ -38,7 +38,7 @@ A full-stack web application for analyzing SAR (System Activity Reporter) system
 4. **Access the application:**
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000
-   - Swagger API docs: http://localhost:8000/docs
+   - Swagger API  docs: http://localhost:8000/docs
 
 ## Project Structure
 
