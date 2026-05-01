@@ -84,9 +84,3 @@ jobs:
       - name: Build successful
         run: |
           echo "Docker images built successfully!"
-        run: |
-          docker-compose down || true
-
-      - name: Build successful
-        run: |
-          echo "Docker images built successfully!"
