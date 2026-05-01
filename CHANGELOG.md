@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.2.3] - 2026-05-01
+
+**Tag:** v1.2.3
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 0
+- Fixes: 1
+
+### Commits
+
+- `72e463f` fix: wf lint/test and changelog upgrade — Ilias-999
+- `aa26408` Merge branch 'main' of github.com:Ilias-999/sar-saas — Ilias-999
+- `9c0749e` BEAKING CHANGE: add unit tests — Ilias-999
+
+### Changed files
+
+#### Commit `72e463f` - fix: wf lint/test and changelog upgrade
+
+- .github/workflows/auto-version.yml
+- .github/workflows/lint-backend.yml
+
+#### Commit `aa26408` - Merge branch 'main' of github.com:Ilias-999/sar-saas
+
+
+#### Commit `9c0749e` - BEAKING CHANGE: add unit tests
+
+- .github/workflows/lint-backend.yml
+- backend/app/__pycache__/__init__.cpython-310.pyc
+- backend/app/__pycache__/parser.cpython-310.pyc
+- backend/app/__pycache__/stats.cpython-310.pyc
+- backend/requirements.txt
+- backend/tests/__init__.py
+- backend/tests/__pycache__/test_parser_and_stats.cpython-310-pytest-8.4.2.pyc
+- backend/tests/test_parser_and_stats.py
+
+---
+
+
 ## [1.2.2] - 2026-05-01
 
 **Tag:** v1.2.2
