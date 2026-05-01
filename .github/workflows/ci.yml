@@ -73,11 +73,17 @@ jobs:
           BACKEND_HOST=0.0.0.0
           EOF
 
-      - name: Build Docker images with docker-compose
+      - name: Build Docker images with docker compose
         run: |
-          docker-compose build
+          docker compose build
 
       - name: Stop Docker containers
+        run: |
+          docker compose down || true
+
+      - name: Build successful
+        run: |
+          echo "Docker images built successfully!"
         run: |
           docker-compose down || true
 
