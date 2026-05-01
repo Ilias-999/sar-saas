@@ -56,3 +56,31 @@ jobs:
         run: |
           cd backend
           PYTHONPATH=. pytest tests/ -v --tb=short
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          FRONTEND_CONTAINER_NAME=sar-frontend
+          FRONTEND_PORT=3000
+          BACKEND_CONTAINER_NAME=sar-backend
+          BACKEND_PORT=8000
+          BACKEND_HOST=0.0.0.0
+          EOF
+
+      - name: Build Docker images with docker-compose
+        run: |
+          docker-compose build
+
+      - name: Stop Docker containers
+        run: |
+          docker-compose down || true
+
+      - name: Build successful
+        run: |
+          echo "Docker images built successfully!"
