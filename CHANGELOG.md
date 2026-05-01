@@ -1,5 +1,33 @@
 # Changelog
 
+## [3.3.0] - 2026-05-01
+
+**Tag:** v3.3.0
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 1
+- Fixes: 0
+
+### Commits
+
+- `b81de8f` Merge branch 'main' of github.com:Ilias-999/sar-saas — Ilias-999
+- `17cb8d2` feat: nothing — Ilias-999
+
+### Changed files
+
+#### Commit `b81de8f` - Merge branch 'main' of github.com:Ilias-999/sar-saas
+
+
+#### Commit `17cb8d2` - feat: nothing
+
+- .env
+- README.md
+
+---
+
+
 ## [3.2.1] - 2026-05-01
 
 **Tag:** v3.2.1
