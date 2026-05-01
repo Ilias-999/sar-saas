@@ -71,7 +71,7 @@ jobs:
 
             message=$(git log -1 --pretty=format:"%s%n%b" "$hash")
 
-            if echo "$message" | grep -q "BREAKING CHANGE"; then
+            if echo "$message" | grep -q "^BREAKING CHANGE"; then
               breaking_count=$((breaking_count + 1))
             elif echo "$message" | grep -q "^feat"; then
               feat_count=$((feat_count + 1))
@@ -80,9 +80,17 @@ jobs:
             fi
           done <<< "$commit_hashes"
 
-          major=$((major + breaking_count))
-          minor=$((minor + feat_count))
-          patch=$((patch + fix_count))
+          # Version calculation with reset logic
+          if [ $breaking_count -gt 0 ]; then
+            major=$((major + 1))
+            minor=0
+            patch=0
+          elif [ $feat_count -gt 0 ]; then
+            minor=$((minor + 1))
+            patch=0
+          else
+            patch=$((patch + fix_count))
+          fi
 
           new_version="$major.$minor.$patch"
           new_tag="v$new_version"
