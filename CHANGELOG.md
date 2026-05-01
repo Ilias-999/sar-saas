@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.4.0] - 2026-05-01
+
+**Tag:** v3.4.0
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 1
+- Fixes: 0
+
+### Commits
+
+- `0fa5e02` feat: workflow — Ilias-999
+
+### Changed files
+
+#### Commit `0fa5e02` - feat: workflow
+
+- .github/workflows/ci.yml
+
+---
+
+
 ## [3.3.0] - 2026-05-01
 
 **Tag:** v3.3.0
