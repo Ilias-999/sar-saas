@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.0.0] - 2026-05-01
+
+**Tag:** v3.0.0
+
+### Version changes
+
+- Breaking changes: 1
+- Features: 0
+- Fixes: 0
+
+### Commits
+
+- `1f10bbe` BREAKING CHANGE: test bc — Ilias-999
+
+### Changed files
+
+#### Commit `1f10bbe` - BREAKING CHANGE: test bc
+
+- .github/workflows/auto-version.yml
+
+---
+
+
 ## [2.2.3] - 2026-05-01
 
 **Tag:** v2.2.3
