@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.2.1] - 2026-05-01
+
+**Tag:** v3.2.1
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 0
+- Fixes: 1
+
+### Commits
+
+- `7902917` fix: keys — Ilias-999
+
+### Changed files
+
+#### Commit `7902917` - fix: keys
+
+- .env
+
+---
+
+
 ## [3.2.0] - 2026-05-01
 
 **Tag:** v3.2.0
