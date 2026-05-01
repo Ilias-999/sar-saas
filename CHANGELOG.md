@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.2.3] - 2026-05-01
+
+**Tag:** v2.2.3
+
+### Version changes
+
+- Breaking changes: 1
+- Features: 0
+- Fixes: 0
+
+### Commits
+
+- `b3acc1a` Merge branch 'main' of github.com:Ilias-999/sar-saas — Ilias-999
+- `f9bfbf0` BREAKING CHANGE — Ilias-999
+
+### Changed files
+
+#### Commit `b3acc1a` - Merge branch 'main' of github.com:Ilias-999/sar-saas
+
+
+#### Commit `f9bfbf0` - BREAKING CHANGE
+
+- CONTRIBUTING.md
+
+---
+
+
 ## [1.2.3] - 2026-05-01
 
 **Tag:** v1.2.3
