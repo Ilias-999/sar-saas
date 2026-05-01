@@ -5,7 +5,7 @@ on:
     branches: [ main, develop ]
     paths:
       - 'backend/**'
-      - '.github/workflows/lint-backend.yml'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
