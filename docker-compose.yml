@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: ${FRONTEND_CONTAINER_NAME}
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    environment:
+      - NGINX_PORT=80
+
+  backend:
+    build: ./backend
+    container_name: ${BACKEND_CONTAINER_NAME}
+    ports:
+      - "${BACKEND_PORT}:8000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    environment:
+      - APP_HOST=${BACKEND_HOST}
+      - APP_PORT=8000
+      - APP_RELOAD=true
+    command: sh -c "uvicorn app.main:app --host ${BACKEND_HOST} --port 8000 --reload"

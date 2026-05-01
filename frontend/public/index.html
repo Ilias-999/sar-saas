@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>SAR Analyzer MVP</title>
+
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <main class="app-container">
+            <header class="app-header">
+                <div>
+                    <h1>SAR Analyzer</h1>
+                    <p>Upload a SAR text file and get basic performance
+                        statistics.</p>
+                </div>
+
+                <span class="badge">MVP</span>
+            </header>
+
+            <section class="card upload-card">
+                <h2>Upload SAR file</h2>
+
+                <div class="upload-zone" id="uploadZone">
+                    <input
+                        id="sarFileInput"
+                        type="file"
+                        accept=".txt,.log,.sar"
+                        hidden />
+
+                    <p id="selectedFileName">No file selected</p>
+
+                    <div class="upload-actions">
+                        <button id="selectFileButton" type="button">
+                            Choose file
+                        </button>
+
+                        <button id="uploadButton" type="button" disabled>
+                            Upload and analyze
+                        </button>
+                    </div>
+                </div>
+
+                <p id="statusMessage" class="status-message"></p>
+            </section>
+
+            <section id="resultSection" class="hidden">
+                <section class="summary-grid">
+                    <article class="summary-card">
+                        <span class="summary-label">File</span>
+                        <strong id="summaryFilename">-</strong>
+                    </article>
+
+                    <article class="summary-card">
+                        <span class="summary-label">Metrics parsed</span>
+                        <strong id="summaryMetricsCount">0</strong>
+                    </article>
+
+                    <article class="summary-card">
+                        <span class="summary-label">Stats generated</span>
+                        <strong id="summaryStatsCount">0</strong>
+                    </article>
+
+                    <article class="summary-card">
+                        <span class="summary-label">Metric types</span>
+                        <strong id="summaryMetricTypes">0</strong>
+                    </article>
+                </section>
+
+                <section class="card">
+                    <div class="table-header">
+                        <div>
+                            <h2>Statistics</h2>
+                            <p>Min, max, average, and sample count grouped by
+                                metric.</p>
+                        </div>
+
+                        <select id="metricTypeFilter">
+                            <option value="ALL">All metric types</option>
+                        </select>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Metric type</th>
+                                    <th>Device</th>
+                                    <th>Metric name</th>
+                                    <th>Min</th>
+                                    <th>Max</th>
+                                    <th>Average</th>
+                                    <th>Samples</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="statsTableBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </main>
+
+        <script src="app.js"></script>
+    </body>
+</html>

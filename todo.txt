@@ -1,0 +1,7 @@
+1. Create the Docker Compose project
+2. Create PostgreSQL tables
+3. Build FastAPI upload endpoint
+4. Parse only CPU first
+5. Store metrics in DB
+6. Calculate min / max / avg
+7. Display stats with Vanilla JS
