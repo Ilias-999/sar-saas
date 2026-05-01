@@ -1,6 +1,6 @@
 name: Auto Version and Changelog
 
-on:
+"on":
   push:
     branches:
       - main
@@ -26,47 +26,57 @@ jobs:
       - name: Get latest tag
         id: latest_tag
         run: |
-          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
-          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$latest_tag" ]; then
+            echo "latest_tag=" >> $GITHUB_OUTPUT
+            echo "base_version=1.0.0" >> $GITHUB_OUTPUT
+          else
+            echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+            echo "base_version=${latest_tag#v}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get commits since latest tag
         id: commits
         run: |
           latest_tag="${{ steps.latest_tag.outputs.latest_tag }}"
 
-          if git rev-parse "$latest_tag" >/dev/null 2>&1; then
-            commits=$(git log "$latest_tag"..HEAD --pretty=format:"%s")
+          if [ -z "$latest_tag" ]; then
+            commit_hashes=$(git log --pretty=format:"%H")
           else
-            commits=$(git log --pretty=format:"%s")
+            commit_hashes=$(git log "$latest_tag"..HEAD --pretty=format:"%H")
           fi
 
-          echo "commits<<EOF" >> $GITHUB_OUTPUT
-          echo "$commits" >> $GITHUB_OUTPUT
+          echo "commit_hashes<<EOF" >> $GITHUB_OUTPUT
+          echo "$commit_hashes" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Calculate next version
         id: version
         run: |
-          latest_tag="${{ steps.latest_tag.outputs.latest_tag }}"
-          version=${latest_tag#v}
+          version="${{ steps.latest_tag.outputs.base_version }}"
 
           IFS='.' read -r major minor patch <<< "$version"
 
-          commits="${{ steps.commits.outputs.commits }}"
+          commit_hashes="${{ steps.commits.outputs.commit_hashes }}"
 
           breaking_count=0
           feat_count=0
           fix_count=0
 
-          while IFS= read -r commit; do
-            if [[ "$commit" == BREAKINGCHANGE* || "$commit" == "BREAKING CHANGE"* || "$commit" == *"BREAKING CHANGE"* ]]; then
+          while IFS= read -r hash; do
+            [ -z "$hash" ] && continue
+
+            message=$(git log -1 --pretty=format:"%s%n%b" "$hash")
+
+            if echo "$message" | grep -q "BREAKING CHANGE"; then
               breaking_count=$((breaking_count + 1))
-            elif [[ "$commit" == feat* ]]; then
+            elif echo "$message" | grep -q "^feat"; then
               feat_count=$((feat_count + 1))
-            elif [[ "$commit" == fix* ]]; then
+            elif echo "$message" | grep -q "^fix"; then
               fix_count=$((fix_count + 1))
             fi
-          done <<< "$commits"
+          done <<< "$commit_hashes"
 
           major=$((major + breaking_count))
           minor=$((minor + feat_count))
@@ -82,19 +92,18 @@ jobs:
           echo "fix_count=$fix_count" >> $GITHUB_OUTPUT
 
       - name: Stop if no version change
-        if: steps.version.outputs.new_tag == steps.latest_tag.outputs.latest_tag
+        if: steps.version.outputs.new_tag == format('v{0}', steps.latest_tag.outputs.base_version)
         run: |
           echo "No feat, fix, or BREAKING CHANGE commits found. No version update needed."
           exit 0
 
-      - name: Update changelog
+      - name: Update CHANGELOG.md with commits and changed files
         run: |
           new_version="${{ steps.version.outputs.new_version }}"
           new_tag="${{ steps.version.outputs.new_tag }}"
           latest_tag="${{ steps.latest_tag.outputs.latest_tag }}"
+          commit_hashes="${{ steps.commits.outputs.commit_hashes }}"
           date=$(date +%Y-%m-%d)
-
-          commits="${{ steps.commits.outputs.commits }}"
 
           temp_file=$(mktemp)
 
@@ -103,14 +112,48 @@ jobs:
             echo ""
             echo "## [$new_version] - $date"
             echo ""
-
+            echo "**Tag:** $new_tag"
+            echo ""
+            echo "### Version changes"
+            echo ""
+            echo "- Breaking changes: ${{ steps.version.outputs.breaking_count }}"
+            echo "- Features: ${{ steps.version.outputs.feat_count }}"
+            echo "- Fixes: ${{ steps.version.outputs.fix_count }}"
+            echo ""
             echo "### Commits"
-            while IFS= read -r commit; do
-              if [[ -n "$commit" ]]; then
-                echo "- $commit"
-              fi
-            done <<< "$commits"
+            echo ""
 
+            while IFS= read -r hash; do
+              [ -z "$hash" ] && continue
+
+              short_hash=$(git rev-parse --short "$hash")
+              subject=$(git log -1 --pretty=format:"%s" "$hash")
+              author=$(git log -1 --pretty=format:"%an" "$hash")
+
+              echo "- \`$short_hash\` $subject — $author"
+            done <<< "$commit_hashes"
+
+            echo ""
+            echo "### Changed files"
+            echo ""
+
+            while IFS= read -r hash; do
+              [ -z "$hash" ] && continue
+
+              short_hash=$(git rev-parse --short "$hash")
+              subject=$(git log -1 --pretty=format:"%s" "$hash")
+
+              echo "#### Commit \`$short_hash\` - $subject"
+              echo ""
+
+              git show --name-only --pretty=format: "$hash" | sed '/^$/d' | while read file; do
+                echo "- $file"
+              done
+
+              echo ""
+            done <<< "$commit_hashes"
+
+            echo "---"
             echo ""
           } > "$temp_file"
 
@@ -120,16 +163,16 @@ jobs:
 
           mv "$temp_file" CHANGELOG.md
 
-      - name: Commit changelog
+      - name: Commit CHANGELOG.md
         run: |
           git add CHANGELOG.md
-          git commit -m "chore(release): ${{ steps.version.outputs.new_tag }}" || echo "No changelog changes"
+          git commit -m "chore(release): ${{ steps.version.outputs.new_tag }} [skip ci]" || echo "No changelog changes"
 
       - name: Create Git tag
         run: |
           git tag "${{ steps.version.outputs.new_tag }}"
 
-      - name: Push changes and tag
+      - name: Push changelog and tag
         run: |
           git push origin main
           git push origin "${{ steps.version.outputs.new_tag }}"
