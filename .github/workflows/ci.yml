@@ -103,6 +103,3 @@ jobs:
             docker compose down
             docker compose up -d --build
             docker image prune -f
-
-git config --global user.name "Ilias-999"
-git config --global user.email "iliasouandouri@gmail.com"
