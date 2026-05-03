@@ -1,5 +1,29 @@
 # Changelog
 
+## [3.5.1] - 2026-05-03
+
+**Tag:** v3.5.1
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 0
+- Fixes: 1
+
+### Commits
+
+- `c75d659` fix: delete the logs — Ilias-999
+
+### Changed files
+
+#### Commit `c75d659` - fix: delete the logs
+
+- frontend/public/app.js
+- frontend/public/index.html
+
+---
+
+
 ## [3.5.0] - 2026-05-03
 
 **Tag:** v3.5.0
