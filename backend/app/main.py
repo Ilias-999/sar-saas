@@ -32,16 +32,22 @@ def log_operation(
     status: str
 ):
     """Log an operation to the database"""
-    operation = Operation(
-        operation_type=operation_type,
-        filename=filename,
-        message=message,
-        status=status,
-    )
-    db.add(operation)
-    db.commit()
-    db.refresh(operation)
-    return operation
+    try:
+        operation = Operation(
+            operation_type=operation_type,
+            filename=filename,
+            message=message,
+            status=status,
+        )
+        db.add(operation)
+        db.commit()
+        db.refresh(operation)
+        print(f"[LOG] {operation_type}: {filename} - {status}")
+        return operation
+    except Exception as e:
+        print(f"[ERROR] Failed to log operation: {str(e)}")
+        db.rollback()
+        return None
 
 @app.get("/")
 def health_check():
@@ -51,16 +57,44 @@ def health_check():
     }
 
 
+@app.get("/api/health/db")
+def db_health_check(db: Session = Depends(get_db)):
+    """Check database connectivity and table status"""
+    try:
+        # Try to query the operations table
+        count = db.query(Operation).count()
+        return {
+            "status": "ok",
+            "database": "connected",
+            "operations_table": "exists",
+            "total_logs": count,
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "database": "disconnected",
+            "error": str(e),
+        }
+
+
 @app.get("/api/operations")
 def get_operations(db: Session = Depends(get_db)):
     """
     Get all logged operations, ordered by date descending (newest first)
     """
-    operations = db.query(Operation).order_by(Operation.date.desc()).all()
-    return {
-        "operations": [op.to_dict() for op in operations],
-        "total_count": len(operations),
-    }
+    try:
+        operations = db.query(Operation).order_by(Operation.date.desc()).all()
+        return {
+            "status": "success",
+            "count": len(operations),
+            "operations": [op.to_dict() for op in operations]
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e),
+            "operations": []
+        }
 
 @app.post("/api/analyze")
 async def analyze_sar_file(file: UploadFile = File(...), db: Session = Depends(get_db)):

@@ -10,29 +10,20 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sar_user}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sar_user} -d ${POSTGRES_DB:-sar_db}" ]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  frontend:
-    build: ./frontend
-    container_name: ${FRONTEND_CONTAINER_NAME}
-    ports:
-      - "${FRONTEND_PORT}:80"
-    depends_on:
-      - backend
-    env_file:
-      - .env
-    environment:
-      - NGINX_PORT=80
+      start_period: 10s
+    restart: unless-stopped
 
   backend:
     build: ./backend
-    container_name: ${BACKEND_CONTAINER_NAME}
+    container_name: ${BACKEND_CONTAINER_NAME:-sar_backend}
     ports:
-      - "${BACKEND_PORT}:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,10 +32,30 @@ services:
     env_file:
       - .env
     environment:
-      - APP_HOST=${BACKEND_HOST}
-      - APP_PORT=8000
-      - APP_RELOAD=true
-    command: sh -c "uvicorn app.main:app --host ${BACKEND_HOST} --port 8000 --reload"
+      APP_HOST: ${BACKEND_HOST:-0.0.0.0}
+      APP_PORT: 8000
+      APP_RELOAD: "true"
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${POSTGRES_DB:-sar_db}
+      DATABASE_USER: ${POSTGRES_USER:-sar_user}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-sar_password}
+    command: >
+      sh -c "uvicorn app.main:app --host ${BACKEND_HOST:-0.0.0.0} --port 8000 --reload"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: ${FRONTEND_CONTAINER_NAME:-sar_frontend}
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    depends_on:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NGINX_PORT: 80
+    restart: unless-stopped
 
 volumes:
   postgres_data:
