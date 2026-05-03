@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.6.2] - 2026-05-03
+
+**Tag:** v3.6.2
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 0
+- Fixes: 1
+
+### Commits
+
+- `a1d81f8` fix: dommy — Ilias-999
+
+### Changed files
+
+#### Commit `a1d81f8` - fix: dommy
+
+- .github/workflows/ci.yml
+
+---
+
+
 ## [3.6.1] - 2026-05-03
 
 **Tag:** v3.6.1
