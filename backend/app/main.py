@@ -1,11 +1,19 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
 from app.parser import parse_sar_text
 from app.stats import calculate_stats
+from app.database import init_db, get_db
+from app.models import Operation
 
 
 app = FastAPI(title="SAR Analyzer Backend", version="1.0.0")
+
+# Initialize database on startup
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,6 +23,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def log_operation(
+    db: Session,
+    operation_type: str,
+    filename: str,
+    message: str,
+    status: str
+):
+    """Log an operation to the database"""
+    operation = Operation(
+        operation_type=operation_type,
+        filename=filename,
+        message=message,
+        status=status,
+    )
+    db.add(operation)
+    db.commit()
+    db.refresh(operation)
+    return operation
+
 @app.get("/")
 def health_check():
     return {
@@ -22,8 +50,20 @@ def health_check():
         "status": "ok",
     }
 
+
+@app.get("/api/operations")
+def get_operations(db: Session = Depends(get_db)):
+    """
+    Get all logged operations, ordered by date descending (newest first)
+    """
+    operations = db.query(Operation).order_by(Operation.date.desc()).all()
+    return {
+        "operations": [op.to_dict() for op in operations],
+        "total_count": len(operations),
+    }
+
 @app.post("/api/analyze")
-async def analyze_sar_file(file: UploadFile = File(...)):
+async def analyze_sar_file(file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
     Upload a SAR text file, parse it, calculate stats, and return JSON.
     """
@@ -34,23 +74,86 @@ async def analyze_sar_file(file: UploadFile = File(...)):
     try:
         raw_content = await file.read()
         text_content = raw_content.decode("utf-8", errors="ignore")
-    except Exception as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Could not read uploaded file: {str(exc)}",
+        log_operation(
+            db,
+            operation_type="FILE_UPLOAD",
+            filename=file.filename,
+            message=f"File uploaded successfully ({len(raw_content)} bytes)",
+            status="success"
         )
+    except Exception as exc:
+        error_msg = f"Could not read uploaded file: {str(exc)}"
+        log_operation(
+            db,
+            operation_type="FILE_UPLOAD",
+            filename=file.filename,
+            message=error_msg,
+            status="failed"
+        )
+        raise HTTPException(status_code=400, detail=error_msg)
 
     if not text_content.strip():
-        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+        error_msg = "Uploaded file is empty"
+        log_operation(
+            db,
+            operation_type="FILE_VALIDATION",
+            filename=file.filename,
+            message=error_msg,
+            status="failed"
+        )
+        raise HTTPException(status_code=400, detail=error_msg)
 
     try:
-        metrics = parse_sar_text(text_content)
-        stats = calculate_stats(metrics)
-    except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Could not analyze SAR file: {str(exc)}",
+        log_operation(
+            db,
+            operation_type="PARSING",
+            filename=file.filename,
+            message="Started parsing SAR file",
+            status="in_progress"
         )
+        metrics = parse_sar_text(text_content)
+        log_operation(
+            db,
+            operation_type="PARSING",
+            filename=file.filename,
+            message=f"Parsing completed - {len(metrics)} metrics parsed",
+            status="success"
+        )
+
+        log_operation(
+            db,
+            operation_type="STATS_CALCULATION",
+            filename=file.filename,
+            message="Started calculating statistics",
+            status="in_progress"
+        )
+        stats = calculate_stats(metrics)
+        log_operation(
+            db,
+            operation_type="STATS_CALCULATION",
+            filename=file.filename,
+            message=f"Statistics calculated - {len(stats)} stats generated",
+            status="success"
+        )
+
+        log_operation(
+            db,
+            operation_type="ANALYSIS",
+            filename=file.filename,
+            message=f"Analysis completed successfully",
+            status="success"
+        )
+
+    except Exception as exc:
+        error_msg = f"Could not analyze SAR file: {str(exc)}"
+        log_operation(
+            db,
+            operation_type="ANALYSIS",
+            filename=file.filename,
+            message=error_msg,
+            status="failed"
+        )
+        raise HTTPException(status_code=500, detail=error_msg)
 
     return {
         "filename": file.filename,

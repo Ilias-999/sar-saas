@@ -1,4 +1,21 @@
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${POSTGRES_CONTAINER_NAME:-sar_postgres}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sar_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sar_password}
+      POSTGRES_DB: ${POSTGRES_DB:-sar_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sar_user}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   frontend:
     build: ./frontend
     container_name: ${FRONTEND_CONTAINER_NAME}
@@ -16,6 +33,9 @@ services:
     container_name: ${BACKEND_CONTAINER_NAME}
     ports:
       - "${BACKEND_PORT}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
       - ./backend:/app
     env_file:
@@ -25,3 +45,6 @@ services:
       - APP_PORT=8000
       - APP_RELOAD=true
     command: sh -c "uvicorn app.main:app --host ${BACKEND_HOST} --port 8000 --reload"
+
+volumes:
+  postgres_data:
