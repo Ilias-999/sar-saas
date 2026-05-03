@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.5.0] - 2026-05-03
+
+**Tag:** v3.5.0
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 1
+- Fixes: 0
+
+### Commits
+
+- `94949c2` feat: WCAG 2.1 — Ilias-999
+
+### Changed files
+
+#### Commit `94949c2` - feat: WCAG 2.1
+
+- frontend/nginx.conf
+- frontend/public/app.js
+- frontend/public/index.html
+- frontend/public/style.css
+
+---
+
+
 ## [3.4.1] - 2026-05-01
 
 **Tag:** v3.4.1
