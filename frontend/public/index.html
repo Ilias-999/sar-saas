@@ -4,12 +4,15 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>SAR Analyzer MVP</title>
+        <title>SAR Analyzer - System Activity Report Analysis Tool</title>
 
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="/style.css" />
     </head>
     <body>
-        <main class="app-container">
+        <!-- Skip to main content link for keyboard navigation -->
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+
+        <main class="app-container" id="main-content">
             <header class="app-header">
                 <div>
                     <h1>SAR Analyzer</h1>
@@ -17,37 +20,48 @@
                         statistics.</p>
                 </div>
 
-                <span class="badge">MVP</span>
+                <span class="badge"
+                    aria-label="Minimum Viable Product version">MVP</span>
             </header>
 
-            <section class="card upload-card">
-                <h2>Upload SAR file</h2>
+            <section class="card upload-card" aria-labelledby="upload-heading">
+                <h2 id="upload-heading">Upload SAR file</h2>
 
-                <div class="upload-zone" id="uploadZone">
+                <div class="upload-zone" id="uploadZone" role="region"
+                    aria-label="File upload area">
+                    <label for="sarFileInput" class="sr-only">Select SAR file to
+                        upload</label>
                     <input
                         id="sarFileInput"
                         type="file"
                         accept=".txt,.log,.sar"
-                        hidden />
+                        aria-describedby="selectedFileName" />
 
-                    <p id="selectedFileName">No file selected</p>
+                    <p id="selectedFileName" class="selected-file-text">No file
+                        selected</p>
 
                     <div class="upload-actions">
-                        <button id="selectFileButton" type="button">
+                        <button id="selectFileButton" type="button"
+                            aria-label="Choose a SAR file from your computer">
                             Choose file
                         </button>
 
-                        <button id="uploadButton" type="button" disabled>
+                        <button id="uploadButton" type="button" disabled
+                            aria-label="Upload and analyze the selected SAR file">
                             Upload and analyze
                         </button>
                     </div>
                 </div>
 
-                <p id="statusMessage" class="status-message"></p>
+                <p id="statusMessage" class="status-message" role="status"
+                    aria-live="polite" aria-atomic="true"></p>
             </section>
 
-            <section id="resultSection" class="hidden">
-                <section class="summary-grid">
+            <section id="resultSection" class="hidden" role="region"
+                aria-labelledby="results-heading" aria-live="polite">
+                <h2 id="results-heading" class="sr-only">Analysis Results</h2>
+                <section class="summary-grid" role="region"
+                    aria-label="Summary statistics">
                     <article class="summary-card">
                         <span class="summary-label">File</span>
                         <strong id="summaryFilename">-</strong>
@@ -69,30 +83,38 @@
                     </article>
                 </section>
 
-                <section class="card">
+                <section class="card" aria-labelledby="stats-heading">
                     <div class="table-header">
                         <div>
-                            <h2>Statistics</h2>
+                            <h2 id="stats-heading">Statistics</h2>
                             <p>Min, max, average, and sample count grouped by
                                 metric.</p>
                         </div>
 
-                        <select id="metricTypeFilter">
-                            <option value="ALL">All metric types</option>
-                        </select>
+                        <div class="filter-wrapper">
+                            <label for="metricTypeFilter">Filter by metric
+                                type:</label>
+                            <select id="metricTypeFilter"
+                                aria-label="Filter results by metric type">
+                                <option value="ALL">All metric types</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="table-wrapper">
-                        <table>
+                        <table role="grid" aria-label="Performance statistics">
+                            <caption class="sr-only">Detailed performance
+                                metrics with minimum, maximum, and average
+                                values</caption>
                             <thead>
                                 <tr>
-                                    <th>Metric type</th>
-                                    <th>Device</th>
-                                    <th>Metric name</th>
-                                    <th>Min</th>
-                                    <th>Max</th>
-                                    <th>Average</th>
-                                    <th>Samples</th>
+                                    <th scope="col">Metric type</th>
+                                    <th scope="col">Device</th>
+                                    <th scope="col">Metric name</th>
+                                    <th scope="col">Min</th>
+                                    <th scope="col">Max</th>
+                                    <th scope="col">Average</th>
+                                    <th scope="col">Samples</th>
                                 </tr>
                             </thead>
 
@@ -101,8 +123,42 @@
                     </div>
                 </section>
             </section>
+
+            <section class="card" aria-labelledby="operations-heading">
+                <h2 id="operations-heading">Operations Log</h2>
+                <p>All backend operations executed on the server with timestamps</p>
+                
+                <div class="table-wrapper">
+                    <table aria-label="Operations log">
+                        <caption class="sr-only">Server operations history with timestamps, operation types, filenames, and status</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">Operation</th>
+                                <th scope="col">Filename</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="operationsTableBody">
+                            <tr>
+                                <td colspan="5" class="empty-row">No operations recorded yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="operations-controls">
+                    <button id="refreshOperationsButton" type="button" aria-label="Refresh operations log">
+                        Refresh Log
+                    </button>
+                    <button id="clearOperationsButton" type="button" aria-label="Clear operations log">
+                        Clear Log
+                    </button>
+                </div>
+            </section>
         </main>
 
-        <script src="app.js"></script>
+        <script src="/app.js"></script>
     </body>
 </html>

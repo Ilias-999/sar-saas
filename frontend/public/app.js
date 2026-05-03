@@ -18,6 +18,19 @@ const statsTableBody = document.getElementById("statsTableBody");
 
 let currentStats = [];
 
+// Announce to screen readers
+function announceToScreenReader(message) {
+  const announcement = document.createElement("div");
+  announcement.setAttribute("aria-live", "polite");
+  announcement.setAttribute("aria-atomic", "true");
+  announcement.className = "sr-only";
+  announcement.textContent = message;
+  document.body.appendChild(announcement);
+
+  // Remove after announcement
+  setTimeout(() => announcement.remove(), 1000);
+}
+
 selectFileButton.addEventListener("click", () => {
   sarFileInput.click();
 });
@@ -28,12 +41,14 @@ sarFileInput.addEventListener("change", () => {
   if (!file) {
     selectedFileName.textContent = "No file selected";
     uploadButton.disabled = true;
+    announceToScreenReader("No file selected");
     return;
   }
 
   selectedFileName.textContent = file.name;
   uploadButton.disabled = false;
   setStatus("", "");
+  announceToScreenReader(`File selected: ${file.name}`);
 });
 
 uploadButton.addEventListener("click", async () => {
@@ -76,6 +91,9 @@ uploadZone.addEventListener("drop", async (event) => {
 
 metricTypeFilter.addEventListener("change", () => {
   renderStatsTable(currentStats);
+  const selectedType = metricTypeFilter.value;
+  const displayName = selectedType === "ALL" ? "all metric types" : selectedType;
+  announceToScreenReader(`Filtered to ${displayName}`);
 });
 
 async function uploadAndAnalyze(file) {
@@ -106,9 +124,18 @@ async function uploadAndAnalyze(file) {
 
     resultSection.classList.remove("hidden");
     setStatus("File analyzed successfully.", "success");
+    announceToScreenReader("Analysis complete. Results displayed below.");
+    
+    // Refresh operations log
+    await fetchAndDisplayOperations();
   } catch (error) {
     console.error(error);
-    setStatus(error.message || "An error occurred while analyzing the file.", "error");
+    const errorMessage = error.message || "An error occurred while analyzing the file.";
+    setStatus(errorMessage, "error");
+    announceToScreenReader(`Error: ${errorMessage}`);
+    
+    // Refresh operations log to show failed operation
+    await fetchAndDisplayOperations();
   } finally {
     setLoadingState(false);
   }
@@ -125,6 +152,10 @@ function renderSummary(data) {
   summaryMetricsCount.textContent = data.metrics_count ?? 0;
   summaryStatsCount.textContent = data.stats_count ?? 0;
   summaryMetricTypes.textContent = metricTypes.size;
+
+  // Announce summary to screen readers
+  const summaryText = `Analysis summary: ${data.metrics_count} metrics parsed, ${data.stats_count} stats generated, ${metricTypes.size} metric types found.`;
+  announceToScreenReader(summaryText);
 }
 
 function populateMetricTypeFilter(stats) {
@@ -162,6 +193,7 @@ function renderStatsTable(stats) {
         <td colspan="7" class="empty-row">No statistics found.</td>
       </tr>
     `;
+    announceToScreenReader("No statistics found for the selected filter.");
     return;
   }
 
@@ -182,6 +214,9 @@ function renderStatsTable(stats) {
 
     statsTableBody.appendChild(row);
   }
+
+  // Announce table update
+  announceToScreenReader(`Table updated with ${filteredStats.length} statistics.`);
 }
 
 function setLoadingState(isLoading) {
@@ -190,6 +225,7 @@ function setLoadingState(isLoading) {
 
   if (isLoading) {
     uploadButton.textContent = "Analyzing...";
+    announceToScreenReader("Analysis in progress");
   } else {
     uploadButton.textContent = "Upload and analyze";
   }
