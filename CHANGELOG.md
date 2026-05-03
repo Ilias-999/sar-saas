@@ -1,5 +1,59 @@
 # Changelog
 
+## [3.6.0] - 2026-05-03
+
+**Tag:** v3.6.0
+
+### Version changes
+
+- Breaking changes: 0
+- Features: 1
+- Fixes: 0
+
+### Commits
+
+- `d503692` feat: new pipeline — Ilias-999
+- `d5b42c2` docs: add .env.example with configuration template — Ilias-999
+- `35b75d6` chore: remove sensitive files from git tracking (.env, __pycache__) — Ilias-999
+- `8a06375` chore: add .gitignore with .env protection and common patterns — Ilias-999
+
+### Changed files
+
+#### Commit `d503692` - feat: new pipeline
+
+- .github/workflows/ci.yml
+- backend/app/database.py
+- backend/app/main.py
+- backend/init.sql
+- docker-compose.yml
+
+#### Commit `d5b42c2` - docs: add .env.example with configuration template
+
+- .env.example
+- backend/app/database.py
+- backend/app/main.py
+- backend/app/models.py
+- backend/requirements.txt
+- docker-compose.yml
+
+#### Commit `35b75d6` - chore: remove sensitive files from git tracking (.env, __pycache__)
+
+- .env
+- backend/app/__pycache__/__init__.cpython-310.pyc
+- backend/app/__pycache__/__init__.cpython-312.pyc
+- backend/app/__pycache__/main.cpython-312.pyc
+- backend/app/__pycache__/parser.cpython-310.pyc
+- backend/app/__pycache__/parser.cpython-312.pyc
+- backend/app/__pycache__/stats.cpython-310.pyc
+- backend/app/__pycache__/stats.cpython-312.pyc
+
+#### Commit `8a06375` - chore: add .gitignore with .env protection and common patterns
+
+- .gitignore
+
+---
+
+
 ## [3.5.1] - 2026-05-03
 
 **Tag:** v3.5.1
