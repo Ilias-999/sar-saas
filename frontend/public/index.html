@@ -123,40 +123,6 @@
                     </div>
                 </section>
             </section>
-
-            <section class="card" aria-labelledby="operations-heading">
-                <h2 id="operations-heading">Operations Log</h2>
-                <p>All backend operations executed on the server with timestamps</p>
-                
-                <div class="table-wrapper">
-                    <table aria-label="Operations log">
-                        <caption class="sr-only">Server operations history with timestamps, operation types, filenames, and status</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Timestamp</th>
-                                <th scope="col">Operation</th>
-                                <th scope="col">Filename</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Details</th>
-                            </tr>
-                        </thead>
-                        <tbody id="operationsTableBody">
-                            <tr>
-                                <td colspan="5" class="empty-row">No operations recorded yet</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="operations-controls">
-                    <button id="refreshOperationsButton" type="button" aria-label="Refresh operations log">
-                        Refresh Log
-                    </button>
-                    <button id="clearOperationsButton" type="button" aria-label="Clear operations log">
-                        Clear Log
-                    </button>
-                </div>
-            </section>
         </main>
 
         <script src="/app.js"></script>

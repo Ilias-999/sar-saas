@@ -125,17 +125,11 @@ async function uploadAndAnalyze(file) {
     resultSection.classList.remove("hidden");
     setStatus("File analyzed successfully.", "success");
     announceToScreenReader("Analysis complete. Results displayed below.");
-    
-    // Refresh operations log
-    await fetchAndDisplayOperations();
   } catch (error) {
     console.error(error);
     const errorMessage = error.message || "An error occurred while analyzing the file.";
     setStatus(errorMessage, "error");
     announceToScreenReader(`Error: ${errorMessage}`);
-    
-    // Refresh operations log to show failed operation
-    await fetchAndDisplayOperations();
   } finally {
     setLoadingState(false);
   }
